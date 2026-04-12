@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>铃兰之剑 · 命运之轮 | 性格测试 (MBTI优化版)</title>
+    <title>铃兰之剑 · 命运之轮 | 性格测试 (28角色完整版)</title>
     <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
     <style>
         * {
@@ -11,7 +11,6 @@
             padding: 0;
             box-sizing: border-box;
         }
-
         body {
             background: linear-gradient(145deg, #0b0e1a 0%, #0f121f 100%);
             font-family: 'Segoe UI', 'PingFang SC', Roboto, 'Helvetica Neue', sans-serif;
@@ -19,8 +18,6 @@
             overflow-x: hidden;
             min-height: 100vh;
         }
-
-        /* 动态粒子背景 */
         .particles-bg {
             position: fixed;
             top: 0;
@@ -42,7 +39,6 @@
             90% { opacity: 0.3; }
             100% { transform: translateY(-200px) rotate(360deg); opacity: 0; }
         }
-
         .container {
             position: relative;
             z-index: 2;
@@ -50,7 +46,6 @@
             margin: 0 auto;
             padding: 1.5rem 1rem 3rem;
         }
-
         .card {
             background: rgba(18, 22, 35, 0.85);
             backdrop-filter: blur(12px);
@@ -60,7 +55,6 @@
             padding: 1.8rem;
             transition: all 0.2s ease;
         }
-
         .gold-text {
             color: #fbbf24;
             text-shadow: 0 0 5px rgba(251, 191, 36, 0.5);
@@ -138,7 +132,7 @@
         canvas {
             display: block;
             margin: 0 auto;
-            background: rgba(255, 255, 255, 0.05);
+            background: #0a0c15;
             border-radius: 20px;
             width: 100%;
             height: auto;
@@ -185,30 +179,42 @@
             opacity: 0.4;
             cursor: not-allowed;
         }
+        .similar-badges {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 0.5rem;
+            margin: 1rem 0;
+        }
+        .similar-badge {
+            background: rgba(245, 158, 11, 0.15);
+            border-radius: 40px;
+            padding: 0.2rem 0.8rem;
+            font-size: 0.75rem;
+            border: 1px solid rgba(245,158,11,0.4);
+        }
     </style>
 </head>
 <body>
 <div class="particles-bg" id="particlesContainer"></div>
 <div class="container" id="appRoot">
-    <!-- 首页 -->
     <div id="landingView" class="card" style="text-align: center;">
         <div style="font-size: 4rem;">⚜️</div>
         <h1 class="serif-title" style="font-size: 2.5rem; margin-top: 0.5rem;">铃兰之剑</h1>
         <h2 style="font-size: 1.3rem; color: #fbbf24;">命运之轮 · 性格测试</h2>
         <div style="height: 2px; width: 80px; background: #f59e0b; margin: 1rem auto;"></div>
-        <p style="margin: 1rem 0;">16种灵魂形态 · 20道抉择 · 基于MBTI优化</p>
+        <p style="margin: 1rem 0;">28种灵魂形态 · 22道抉择 · 个性化匹配</p>
         <p style="color: #9ca3af; font-size: 0.9rem;">在这片战火纷飞的大陆，你的性格将唤醒哪位英雄？</p>
         <button class="btn-gold" id="startBtn" style="margin-top: 2rem;">✦ 开始命运之轮 ✦</button>
-        <footer>铃兰之剑 · 粉丝性格测试 | MBTI风格 诙谐向</footer>
+        <footer>铃兰之剑 · 粉丝性格测试 | 均匀分布优化版</footer>
     </div>
 
-    <!-- 测试视图 -->
     <div id="quizView" class="hidden">
         <div class="card" style="padding: 1.5rem;">
             <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
             <div style="display: flex; justify-content: space-between; margin: 0.8rem 0 1rem;">
                 <span id="qIndexDisplay">第1题</span>
-                <span id="qCountDisplay">1 / 20</span>
+                <span id="qCountDisplay">1 / 22</span>
             </div>
             <h3 id="questionText" style="font-size: 1.4rem; line-height: 1.4; margin-bottom: 1.5rem;"></h3>
             <div id="optionsContainer"></div>
@@ -219,14 +225,12 @@
         </div>
     </div>
 
-    <!-- 加载视图 -->
     <div id="loadingView" class="hidden card" style="text-align: center; padding: 2rem;">
         <div style="font-size: 2rem;">⚔️</div>
         <p style="margin: 1rem 0;">命运纺锤转动，正在解析你的灵魂轨迹...</p>
         <div class="progress-bar" style="width: 80%; margin: 1rem auto;"><div class="progress-fill" style="width: 70%; animation: pulse 1s infinite;"></div></div>
     </div>
 
-    <!-- 结果视图 -->
     <div id="resultView" class="hidden">
         <div class="card result-card" id="resultCardContainer"></div>
         <div style="display: flex; gap: 1rem; justify-content: center; margin-top: 1.5rem;">
@@ -239,216 +243,80 @@
 </div>
 
 <script>
-    // ---------- 角色库：16个英雄（基于最新性格与MBTI调整5维分数）----------
-    // 维度说明：信念(理想主义高分←→现实主义低分)，行动(主动进取高分←→沉稳隐忍低分)
-    // 情感(热忱同理高分←→冷静理性低分)，原则(原则至上高分←→灵活权变低分)，自信(自信坚定高分←→动荡敏感低分)
+    // ---------- 角色库：28个英雄（原16个 + 新增12个）----------
     const CHARACTERS = {
-        "克拉拉": {
-            title: "阳光守护者", mbti: "ESFJ", faction: "铃兰之剑",
-            quote: "只要微笑，日子就会变好的！",
-            desc: "你内心阳光灿烂，哪怕生活给过你伤痕，你依然选择用善良和乐观感染所有人。你不是天生的战士，却能为守护的人挺身而出，是大家的治愈小太阳。",
-            traits: ["善良","乐观","治愈","守护"],
-            dims: [16, 6, 18, 12, 12]  // 信念中等偏理想，行动沉稳，情感热忱，原则中等，自信中等
-        },
-        "歌洛莉亚": {
-            title: "正义之光", mbti: "ENFJ", faction: "伊利亚王国",
-            quote: "骑士的剑永不蒙尘，荣誉即吾命！",
-            desc: "你骨子里刻着骑士精神，正义感爆棚。遇到不公你会第一个冲上去，你的勇气让伙伴们安心，你就是团队里的旗帜。",
-            traits: ["高贵","勇敢","领袖","光明"],
-            dims: [19, 16, 14, 18, 16]
-        },
-        "萨曼莎": {
-            title: "慈悲圣女", mbti: "INTJ", faction: "法皇国",
-            quote: "愿圣光抚慰所有伤痕。",
-            desc: "你温柔而有力量，你的悲悯不是软弱，而是洞悉黑暗后依然选择照亮他人。你是受伤之人的避风港。",
-            traits: ["圣洁","慈悲","坚定","治愈"],
-            dims: [15, 4, 16, 13, 8]   // 理想主义中高，行动隐忍，情感热忱，原则偏向守序，自信稍低
-        },
-        "赛琳娜": {
-            title: "隐忍之刃", mbti: "INFJ", faction: "骑士同盟",
-            quote: "有些事，必须由我独自斩断。",
-            desc: "你沉默内敛，历经挫折却从不抱怨。你习惯将责任扛在肩上，默默守护着重要之人。孤独是你的铠甲。",
-            traits: ["坚韧","隐忍","忠诚","孤高"],
-            dims: [13, 5, 12, 16, 7]
-        },
-        "艾达": {
-            title: "智慧先驱", mbti: "INFJ", faction: "反抗军",
-            quote: "看穿迷雾，才能找到出路。",
-            desc: "你善于思考，总能在混沌中看到脉络。你安静的外表下是洞悉一切的智慧，是团队的谋略核心。",
-            traits: ["知性","智慧","沉静","远见"],
-            dims: [14, 6, 11, 13, 10]
-        },
-        "法卡尔": {
-            title: "忠义之盾", mbti: "ISFJ", faction: "铃兰之剑",
-            quote: "我说过保护你，就会用生命践行。",
-            desc: "你是最值得托付后背的伙伴。你的忠诚基于信念，行动永远比言语有力，是团队中最坚固的盾牌。",
-            traits: ["忠诚","坚毅","可靠","热血"],
-            dims: [12, 13, 10, 17, 12]
-        },
-        "柯瓦雷": {
-            title: "灰色谋者", mbti: "INTJ", faction: "伊利亚贵族",
-            quote: "棋盘之上，没有无辜者。",
-            desc: "你喜欢掌控全局，冷静到近乎冷酷。每一步都为了更大的秩序，利益是你的语言，优雅是你的面具。",
-            traits: ["精明","冷静","权谋","理性"],
-            dims: [3, 15, 3, 4, 18]
-        },
-        "赫砂": {
-            title: "悲情艺人", mbti: "INFJ", faction: "埃拉曼",
-            quote: "琴弦上的悲欢，无人能懂。",
-            desc: "你充满才华却身不由己，在自由与枷锁间挣扎。你的艺术直击灵魂，却也因此更感到孤独。",
-            traits: ["才华","感性","矛盾","深沉"],
-            dims: [9, 8, 15, 7, 6]
-        },
-        "帕米娜": {
-            title: "铁血统帅", mbti: "ESTJ", faction: "伊利亚王国",
-            quote: "秩序建立在钢铁与纪律之上。",
-            desc: "你是天生的指挥官，冷静果决，以绝对理性守护领土。你的威严让人敬畏，却也是帝国最坚实的壁垒。",
-            traits: ["铁血","理性","统帅","威严"],
-            dims: [5, 16, 4, 18, 19]
-        },
-        "塔埃尔": {
-            title: "温和学者", mbti: "INFP", faction: "伊利亚王室",
-            quote: "若世界和平，我愿埋首书海。",
-            desc: "你向往平和，对权力没有欲望。你保持着学者的清醒与温和，是纷争中难得的理智声音。",
-            traits: ["温和","随性","智慧","淡泊"],
-            dims: [11, 3, 13, 8, 7]
-        },
-        "拉维耶": {
-            title: "狂野之心", mbti: "ESFP", faction: "铃兰之剑",
-            quote: "喝最烈的酒，打最狠的仗！",
-            desc: "你豪爽不羁，天生就是团队的粘合剂。你为同伴而战，热血冲动，但你的正义感总能点燃希望。",
-            traits: ["豪爽","热血","自由","领袖"],
-            dims: [12, 19, 17, 6, 16]
-        },
-        "露维塔": {
-            title: "神秘莫测", mbti: "ENFP", faction: "法皇国·异端",
-            quote: "你所见的，不过是幽暗的余烬。",
-            desc: "你如同夜魅，危险而迷人。没人能看透你的真实想法，你游走在规则边缘，散发着致命的吸引力。",
-            traits: ["神秘","魅惑","危险","自由"],
-            dims: [8, 15, 12, 9, 14]
-        },
-        "阿坎贝": {
-            title: "利益至上", mbti: "ENTJ", faction: "埃拉曼商会",
-            quote: "世上没有永恒的敌人，只有永恒的利益。",
-            desc: "你精明现实，但不失底线。你擅长博弈，为守护在意的人愿意弄脏双手，是个复杂的务实主义者。",
-            traits: ["精明","务实","灵活","重利"],
-            dims: [2, 14, 4, 3, 16]
-        },
-        "索菲亚": {
-            title: "无影之刃", mbti: "ISTJ", faction: "倒吊人",
-            quote: "我身在黑暗，只为守护那一抹微光。",
-            desc: "外表冷酷，内心温柔。你的手段果决，但一切都为了保护珍视之物。童年的伤痕让你学会隐藏情绪。",
-            traits: ["果决","外冷内热","缜密","守护"],
-            dims: [6, 9, 9, 15, 8]
-        },
-        "翠斯坦": {
-            title: "桀骜义士", mbti: "ESTP", faction: "水鬼帮",
-            quote: "谁敢动我家人，我让他后悔来到世上。",
-            desc: "你表面乖张叛逆，实则重情重义。对敌人凶残，对认定的伙伴可以付出一切，是狂野中的温柔。",
-            traits: ["叛逆","重情","豪迈","义气"],
-            dims: [8, 18, 14, 6, 17]
-        },
-        "迪塔利奥": {
-            title: "孤傲霸主", mbti: "ISTJ", faction: "伊利亚王室",
-            quote: "王座之路，不需要同情。",
-            desc: "你天生王者的孤傲，行事强硬但心怀国家。你不屑解释，只用结果说话，是让人又敬又畏的统治者。",
-            traits: ["孤傲","强硬","威严","野心"],
-            dims: [4, 16, 3, 19, 18]
-        }
+        // 原有16个 (艾达分数已调整)
+        "克拉拉": { title: "阳光守护者", mbti: "ESFJ", faction: "铃兰之剑", quote: "只要微笑，日子就会变好的！", desc: "你内心阳光灿烂，哪怕生活给过你伤痕，你依然选择用善良和乐观感染所有人。", traits: ["善良","乐观","治愈","守护"], dims: [16,6,18,12,12] },
+        "歌洛莉亚": { title: "正义之光", mbti: "ENFJ", faction: "伊利亚王国", quote: "骑士的剑永不蒙尘，荣誉即吾命！", desc: "你骨子里刻着骑士精神，正义感爆棚。", traits: ["高贵","勇敢","领袖","光明"], dims: [19,16,14,18,16] },
+        "萨曼莎": { title: "慈悲圣女", mbti: "INTJ", faction: "法皇国", quote: "愿圣光抚慰所有伤痕。", desc: "你温柔而有力量，你的悲悯不是软弱，而是洞悉黑暗后依然选择照亮他人。", traits: ["圣洁","慈悲","坚定","治愈"], dims: [15,4,16,13,8] },
+        "赛琳娜": { title: "隐忍之刃", mbti: "INFJ", faction: "骑士同盟", quote: "有些事，必须由我独自斩断。", desc: "你沉默内敛，历经挫折却从不抱怨。孤独是你的铠甲。", traits: ["坚韧","隐忍","忠诚","孤高"], dims: [13,5,12,16,7] },
+        "艾达": { title: "智慧先驱", mbti: "INFJ", faction: "反抗军", quote: "看穿迷雾，才能找到出路。", desc: "你善于思考，总能在混沌中看到脉络。", traits: ["知性","智慧","沉静","远见"], dims: [16,6,16,6,10] },
+        "法卡尔": { title: "忠义之盾", mbti: "ISFJ", faction: "铃兰之剑", quote: "我说过保护你，就会用生命践行。", desc: "你是最值得托付后背的伙伴。", traits: ["忠诚","坚毅","可靠","热血"], dims: [12,13,10,17,12] },
+        "柯瓦雷": { title: "灰色谋者", mbti: "INTJ", faction: "伊利亚贵族", quote: "棋盘之上，没有无辜者。", desc: "你喜欢掌控全局，冷静到近乎冷酷。", traits: ["精明","冷静","权谋","理性"], dims: [4,15,4,4,18] },
+        "赫砂": { title: "悲情艺人", mbti: "INFJ", faction: "埃拉曼", quote: "琴弦上的悲欢，无人能懂。", desc: "你充满才华却身不由己，在自由与枷锁间挣扎。", traits: ["才华","感性","矛盾","深沉"], dims: [9,8,15,7,6] },
+        "帕米娜": { title: "铁血统帅", mbti: "ESTJ", faction: "伊利亚王国", quote: "秩序建立在钢铁与纪律之上。", desc: "你是天生的指挥官，冷静果决。", traits: ["铁血","理性","统帅","威严"], dims: [5,16,4,18,19] },
+        "塔埃尔": { title: "温和学者", mbti: "INFP", faction: "伊利亚王室", quote: "若世界和平，我愿埋首书海。", desc: "你向往平和，对权力没有欲望。", traits: ["温和","随性","智慧","淡泊"], dims: [11,3,13,8,7] },
+        "拉维耶": { title: "狂野之心", mbti: "ESFP", faction: "铃兰之剑", quote: "喝最烈的酒，打最狠的仗！", desc: "你豪爽不羁，天生就是团队的粘合剂。", traits: ["豪爽","热血","自由","领袖"], dims: [12,19,17,6,16] },
+        "露维塔": { title: "神秘莫测", mbti: "ENFP", faction: "法皇国·异端", quote: "你所见的，不过是幽暗的余烬。", desc: "你如同夜魅，危险而迷人。", traits: ["神秘","魅惑","危险","自由"], dims: [8,15,12,9,14] },
+        "阿坎贝": { title: "利益至上", mbti: "ENTJ", faction: "埃拉曼商会", quote: "世上没有永恒的敌人，只有永恒的利益。", desc: "你精明现实，但不失底线。", traits: ["精明","务实","灵活","重利"], dims: [2,14,4,3,16] },
+        "索菲亚": { title: "无影之刃", mbti: "ISTJ", faction: "倒吊人", quote: "我身在黑暗，只为守护那一抹微光。", desc: "外表冷酷，内心温柔。", traits: ["果决","外冷内热","缜密","守护"], dims: [6,9,9,15,8] },
+        "翠斯坦": { title: "桀骜义士", mbti: "ESTP", faction: "水鬼帮", quote: "谁敢动我家人，我让他后悔来到世上。", desc: "你表面乖张叛逆，实则重情重义。", traits: ["叛逆","重情","豪迈","义气"], dims: [8,18,14,6,17] },
+        "迪塔利奥": { title: "孤傲霸主", mbti: "ISTJ", faction: "伊利亚王室", quote: "王座之路，不需要同情。", desc: "你天生王者的孤傲，行事强硬。", traits: ["孤傲","强硬","威严","野心"], dims: [4,16,3,19,18] },
+        // 新增12个
+        "贝拉": { title: "天才小魔女", mbti: "ENTP", faction: "流浪魔女", quote: "咱是天才嘛，这有什么好大惊小怪的！", desc: "你有着强烈的好奇心，对新鲜事物充满探索欲，是个话痨小可爱。你痴迷于自己热爱的领域，即使与世界格格不入也毫不在意。", traits: ["好奇心","话痨","天才","随性"], dims: [8,14,16,5,12] },
+        "茉茉": { title: "恍惚的流浪者", mbti: "ISFP", faction: "薇尔德流浪者", quote: "……嗯？刚才发生了什么？", desc: "你仿佛游离于世界之外，对发生在自己身上的苦难显得麻木而迟钝。你沉默寡言，反应缓慢，但内心并非毫无知觉。", traits: ["恍惚","迟钝","坚韧","神秘"], dims: [6,4,8,10,4] },
+        "鲁特菲": { title: "忧国的谋士", mbti: "ENTJ", faction: "伊利亚王国", quote: "为了伊利亚，即使双手沾满污泥，我也在所不惜。", desc: "你聪慧且富有学识，对国家命运深感忧虑。你有野心，也有手腕，渴望通过自己的力量改变腐朽的国家。", traits: ["聪慧","野心","孤独","辩才"], dims: [3,15,6,2,16] },
+        "伊南娜": { title: "成长中的王女", mbti: "ENFJ", faction: "伊利亚王室", quote: "我必须成为大家期望中的完美王女。", desc: "你本性善良温柔，在经历了母亲离世的打击后，你强迫自己迅速成长，努力承担起王女的责任。", traits: ["善良","温柔","责任感","成长"], dims: [15,7,17,14,9] },
+        "泰登": { title: "儒雅的老骑士", mbti: "ISFJ", faction: "伊利亚王国", quote: "守护小姐的安危，是我此生唯一的职责。", desc: "你温厚持重，经验丰富，是年轻骑士们可靠的导师。你不喜锋芒毕露，处事圆融，更愿默默守护。", traits: ["儒雅","持重","忠诚","守护"], dims: [12,5,14,17,11] },
+        "爱莎": { title: "温柔的坚盾", mbti: "INFJ", faction: "伊利亚王国", quote: "我的坚定并非源于冷酷，而是为了保护重要的人。", desc: "你外表温柔可亲，内心却冷静果决。你的温柔中带着一种不容置疑的坚定，是外柔内刚的守护者。", traits: ["温柔","冷静","果决","守护"], dims: [14,9,15,16,13] },
+        "帕西法尔": { title: "堕落的骑士", mbti: "ISTJ", faction: "铁荆棘骑士团", quote: "荣誉？那东西在我被背叛的那一刻就已经死了。", desc: "你曾是个谦逊、英勇、珍视荣誉的骑士。然而背叛让你失去了一切，如今你沉默寡言，背负着背叛者的污名。", traits: ["堕落","悔恨","沉默","复仇"], dims: [5,13,5,15,7] },
+        "柯莱丹萨": { title: "悲悯的医者", mbti: "INFJ", faction: "法皇国", quote: "即使透支我自己，我也要救活眼前的人……", desc: "你医术精湛，心怀虔诚的善良。尽管待人冷淡，但内心却燃烧着救死扶伤的火焰，却伴随着深深的愧疚。", traits: ["善良","冷淡","尽责","愧疚"], dims: [15,4,18,13,5] },
+        "伊瑟琳德": { title: "诡诈的参谋", mbti: "ENTP", faction: "骑士同盟", quote: "规则？那只是给弱者设置的枷锁罢了。", desc: "你浑身散发着危险而迷人的气息。你冷静睿智，作战风格诡诈多变，善于玩弄敌人于股掌之间。", traits: ["危险","诡诈","聪慧","理性"], dims: [2,17,4,3,18] },
+        "露卡玛尔": { title: "放浪的帝王", mbti: "ENFP", faction: "埃拉曼", quote: "人生苦短，及时行乐才是真理。至于危险？那不是更有趣吗？", desc: "你行事放浪形骸，纵情享乐，有着让人捉摸不透的危险而魅惑的气质，神秘的行径令所有人畏惧。", traits: ["放浪","神秘","魅惑","危险"], dims: [7,16,13,5,17] },
+        "叶迦内": { title: "绝望的工匠", mbti: "INFP", faction: "埃拉曼", quote: "一切都没有意义……无论是生，还是死。", desc: "你天资聪颖，技艺精湛，却对生活充满了极度的悲观与绝望。内心充满了虚无感，仿佛只有创作才能带来片刻安宁。", traits: ["绝望","悲观","聪慧","虚无"], dims: [4,6,7,8,3] },
+        "阿加塔": { title: "野性的女王", mbti: "ESTJ", faction: "露西亚", quote: "狼群从不问为什么，只问怎么做。跟随我，或者死在战场上。", desc: "你强大、冷静、睿智且果断，是充满力量感与野性魅力的传奇英雄。你身先士卒，是所有人信赖的领袖。", traits: ["强大","野性","冷静","领袖"], dims: [4,19,5,18,19] }
     };
-    const characterKeys = Object.keys(CHARACTERS); // 16个
+    const characterKeys = Object.keys(CHARACTERS); // 28个
 
-    // ----- 全新20道题目，每个维度4题，维度: belief, action, empathy, principle, confidence -----
+    // ----- 22道题目：原20题 + 2道权重题（信念/行动/情感权重）-----
     const questions = [
-        { text: "你更认同哪种领导风格？", dim: "belief", opts: [
-            { val:5, text:"仁爱宽厚，以德服人，关注每个人的福祉" },
-            { val:3, text:"智谋超群，灵活权变，带领团队走向胜利" },
-            { val:1, text:"铁腕强势，高效稳定，结果比过程更重要" } ] },
-        { text: "周末的闲暇时间，你通常更喜欢？", dim: "action", opts: [
-            { val:5, text:"约朋友聚会、户外探险，动起来才有趣" },
-            { val:3, text:"宅家看书/看电影，偶尔出门" },
-            { val:1, text:"独自安静休息，远离人群" } ] },
-        { text: "朋友向你倾诉感情问题，你更可能？", dim: "empathy", opts: [
-            { val:5, text:"感同身受，陪他一起哭一起骂" },
-            { val:3, text:"理性分析，帮他找出问题根源" },
-            { val:1, text:"简单安慰几句，不太会共情" } ] },
-        { text: "对于‘无规矩不成方圆’这句话，你的态度是？", dim: "principle", opts: [
-            { val:5, text:"完全认同，规则是秩序的基石" },
-            { val:3, text:"大部分情况遵守，特殊情况可以变通" },
-            { val:1, text:"规则常束缚人，灵活应变更重要" } ] },
-        { text: "面对一项高难度的新挑战，你内心的第一反应是？", dim: "confidence", opts: [
-            { val:5, text:"充满信心，我能搞定！" },
-            { val:3, text:"有点紧张，但愿意尝试" },
-            { val:1, text:"怀疑自己，需要他人鼓励" } ] },
-        { text: "你认为理想的社会应当？", dim: "belief", opts: [
-            { val:5, text:"人人平等，充满温情与互助" },
-            { val:3, text:"有序但允许竞争，给强者空间" },
-            { val:1, text:"强者生存的自然法则，优胜劣汰" } ] },
-        { text: "在团队合作中，你常常扮演的角色是？", dim: "action", opts: [
-            { val:5, text:"领导者/先锋，主动推动进度" },
-            { val:3, text:"协调者/智囊，出谋划策" },
-            { val:1, text:"执行者/后勤，默默完成任务" } ] },
-        { text: "看到感人的电影片段，你会？", dim: "empathy", opts: [
-            { val:5, text:"哭得稀里哗啦，完全控制不住" },
-            { val:3, text:"鼻子发酸，但会忍住" },
-            { val:1, text:"内心毫无波澜，觉得只是演戏" } ] },
-        { text: "对于已经约定好的事情，你通常？", dim: "principle", opts: [
-            { val:5, text:"风雨无阻，必须做到" },
-            { val:3, text:"尽量做到，如有意外会提前沟通" },
-            { val:1, text:"看心情，临时改变也无所谓" } ] },
-        { text: "当别人批评你时，你更容易？", dim: "confidence", opts: [
-            { val:1, text:"非常沮丧，自我怀疑好几天" },
-            { val:3, text:"有点不开心，但会反思" },
-            { val:5, text:"冷静分析，合理就接受，不合理就无视" } ] },
-        { text: "你更欣赏哪种英雄？", dim: "belief", opts: [
-            { val:5, text:"牺牲自己拯救众人的悲情英雄" },
-            { val:3, text:"智勇双全，用谋略改变战局的英雄" },
-            { val:1, text:"开创帝国、铁腕统治的霸主" } ] },
-        { text: "在派对上，你通常是？", dim: "action", opts: [
-            { val:5, text:"气氛组，玩得最嗨的那个" },
-            { val:3, text:"和几个熟人聊天，不冷不热" },
-            { val:1, text:"角落待着，希望早点结束" } ] },
-        { text: "你觉得自己更偏向？", dim: "empathy", opts: [
-            { val:5, text:"感性浪漫，容易共情" },
-            { val:3, text:"平衡，看情况" },
-            { val:1, text:"冷静理性，注重逻辑" } ] },
-        { text: "当规则与情义冲突时，你会？", dim: "principle", opts: [
-            { val:5, text:"坚守规则，法理大于人情" },
-            { val:3, text:"看具体情境，尽量两全" },
-            { val:1, text:"人情至上，规则可以变通" } ] },
-        { text: "你对自己的能力评价是？", dim: "confidence", opts: [
-            { val:5, text:"非常自信，相信能克服大多数困难" },
-            { val:3, text:"一般，有时会怀疑" },
-            { val:1, text:"常常觉得自己不够好" } ] },
-        { text: "你更向往哪种生活？", dim: "belief", opts: [
-            { val:5, text:"田园诗般的和平乡村，邻里互助" },
-            { val:3, text:"繁华都市，机会与挑战并存" },
-            { val:1, text:"强者为尊的荒野，凭实力说话" } ] },
-        { text: "如果有一个冒险的机会，你会？", dim: "action", opts: [
-            { val:5, text:"立刻收拾行李，说走就走" },
-            { val:3, text:"考虑周全后再决定" },
-            { val:1, text:"太危险了，还是算了" } ] },
-        { text: "你更容易被哪种艺术作品打动？", dim: "empathy", opts: [
-            { val:5, text:"描绘细腻情感与人间疾苦的作品" },
-            { val:3, text:"展现智慧与谋略的故事" },
-            { val:1, text:"宏大叙事与英雄史诗" } ] },
-        { text: "对于‘忠诚’二字，你认为？", dim: "principle", opts: [
-            { val:5, text:"人无信不立，忠诚是最宝贵的品质" },
-            { val:3, text:"忠诚很重要，但也看对象" },
-            { val:1, text:"忠诚有时是愚昧，利益更实在" } ] },
-        { text: "当你失败时，你通常？", dim: "confidence", opts: [
-            { val:1, text:"一蹶不振，需要很长时间恢复" },
-            { val:3, text:"会难过，但很快调整" },
-            { val:5, text:"迅速复盘，越挫越勇" } ] }
+        // 原有20题 (保持原样)
+        { text: "你更认同哪种领导风格？", dim: "belief", opts: [{val:5,text:"仁爱宽厚，以德服人"},{val:3,text:"智谋超群，灵活权变"},{val:1,text:"铁腕强势，结果至上"}] },
+        { text: "周末闲暇时间，你通常？", dim: "action", opts: [{val:5,text:"约朋友聚会、户外探险"},{val:3,text:"宅家看书/看电影"},{val:1,text:"独自安静休息"}] },
+        { text: "朋友向你倾诉感情问题，你更可能？", dim: "empathy", opts: [{val:5,text:"感同身受，陪他一起哭"},{val:3,text:"理性分析，找出根源"},{val:1,text:"简单安慰几句"}] },
+        { text: "对于‘无规矩不成方圆’，你的态度？", dim: "principle", opts: [{val:5,text:"完全认同，规则是基石"},{val:3,text:"大部分遵守，特殊情况变通"},{val:1,text:"规则束缚人，灵活更重要"}] },
+        { text: "面对高难度新挑战，你第一反应？", dim: "confidence", opts: [{val:5,text:"充满信心，我能搞定"},{val:3,text:"有点紧张，但愿意尝试"},{val:1,text:"怀疑自己，需要鼓励"}] },
+        { text: "你认为理想的社会应当？", dim: "belief", opts: [{val:5,text:"人人平等，温情互助"},{val:3,text:"有序但允许竞争"},{val:1,text:"强者生存，优胜劣汰"}] },
+        { text: "在团队合作中，你常扮演？", dim: "action", opts: [{val:5,text:"领导者/先锋"},{val:3,text:"协调者/智囊"},{val:1,text:"执行者/后勤"}] },
+        { text: "看到感人的电影片段，你会？", dim: "empathy", opts: [{val:5,text:"哭得稀里哗啦"},{val:3,text:"鼻子发酸，忍住"},{val:1,text:"内心毫无波澜"}] },
+        { text: "对于约定好的事情，你通常？", dim: "principle", opts: [{val:5,text:"风雨无阻，必须做到"},{val:3,text:"尽量做到，意外会沟通"},{val:1,text:"看心情，临时改变"}] },
+        { text: "当别人批评你时，你更容易？", dim: "confidence", opts: [{val:1,text:"非常沮丧，自我怀疑"},{val:3,text:"有点不开心，会反思"},{val:5,text:"冷静分析，合理就接受"}] },
+        { text: "你更欣赏哪种英雄？", dim: "belief", opts: [{val:5,text:"牺牲自己拯救众人"},{val:3,text:"智勇双全，改变战局"},{val:1,text:"开创帝国，铁腕统治"}] },
+        { text: "在派对上，你通常是？", dim: "action", opts: [{val:5,text:"气氛组，玩得最嗨"},{val:3,text:"和熟人聊天"},{val:1,text:"角落待着"}] },
+        { text: "你觉得自己更偏向？", dim: "empathy", opts: [{val:5,text:"感性浪漫，容易共情"},{val:3,text:"平衡，看情况"},{val:1,text:"冷静理性，注重逻辑"}] },
+        { text: "当规则与情义冲突时，你会？", dim: "principle", opts: [{val:5,text:"坚守规则，法理大于人情"},{val:3,text:"看情境，尽量两全"},{val:1,text:"人情至上，规则变通"}] },
+        { text: "你对自己的能力评价？", dim: "confidence", opts: [{val:5,text:"非常自信"},{val:3,text:"一般，有时怀疑"},{val:1,text:"常常觉得自己不够好"}] },
+        { text: "你更向往哪种生活？", dim: "belief", opts: [{val:5,text:"田园和平，邻里互助"},{val:3,text:"繁华都市，机会挑战"},{val:1,text:"强者为尊，凭实力"}] },
+        { text: "如果有一个冒险的机会，你会？", dim: "action", opts: [{val:5,text:"立刻收拾行李，说走就走"},{val:3,text:"考虑周全再决定"},{val:1,text:"太危险了，算了"}] },
+        { text: "你更容易被哪种艺术作品打动？", dim: "empathy", opts: [{val:5,text:"细腻情感与人间疾苦"},{val:3,text:"智慧与谋略的故事"},{val:1,text:"宏大叙事与英雄史诗"}] },
+        { text: "对于‘忠诚’二字，你认为？", dim: "principle", opts: [{val:5,text:"人无信不立，最宝贵"},{val:3,text:"很重要，也看对象"},{val:1,text:"有时是愚昧，利益实在"}] },
+        { text: "当你失败时，你通常？", dim: "confidence", opts: [{val:1,text:"一蹶不振，恢复很久"},{val:3,text:"会难过，但很快调整"},{val:5,text:"迅速复盘，越挫越勇"}] },
+        // 新增权重题1：测量对“信念 vs 现实”和“情感 vs 理性”的重视程度
+        { text: "当你评判一个人的行为时，你更看重他的动机还是结果？", dim: "weight_mix1", opts: [
+            {val:5, text:"动机最重要，好心办坏事也可以理解", weightEffect: {belief:1.3, empathy:1.2} },
+            {val:3, text:"两者平衡，看具体情况", weightEffect: {belief:1.0, empathy:1.0} },
+            {val:1, text:"结果最重要，成王败寇", weightEffect: {belief:0.7, empathy:0.8} }
+        ]},
+        // 新增权重题2：测量对“行动”和“原则”的重视程度
+        { text: "在团队合作中，你认为效率优先还是规则优先？", dim: "weight_mix2", opts: [
+            {val:5, text:"效率优先，快速迭代", weightEffect: {action:1.3, principle:0.7} },
+            {val:3, text:"平衡，按流程推进", weightEffect: {action:1.0, principle:1.0} },
+            {val:1, text:"规则优先，按章办事", weightEffect: {action:0.7, principle:1.3} }
+        ]}
     ];
 
-    // 维度映射
-    const dimKeys = ["belief", "action", "empathy", "principle", "confidence"];
-    
-    // 当前状态
     let currentIndex = 0;
-    let userAnswers = new Array(20).fill(null);
-    let quizStarted = false;
+    let userAnswers = new Array(questions.length).fill(null);
 
     // DOM 元素
     const landing = document.getElementById('landingView');
@@ -467,7 +335,6 @@
     const qCountDisplay = document.getElementById('qCountDisplay');
     const progressFill = document.getElementById('progressFill');
 
-    // 渲染当前题目
     function renderQuestion() {
         const q = questions[currentIndex];
         questionText.innerText = q.text;
@@ -492,47 +359,95 @@
         qIndexDisplay.innerText = `第${currentIndex+1}题`;
         qCountDisplay.innerText = `${currentIndex+1} / ${questions.length}`;
         progressFill.style.width = `${((currentIndex+1)/questions.length)*100}%`;
-        // 上一题按钮状态
         prevBtn.disabled = (currentIndex === 0);
     }
 
-    // 计算各维度总分
-    function computeScores() {
+    // 计算五维基础得分 (信念,行动,情感,原则,自信)
+    function computeBaseScores() {
         let scores = { belief:0, action:0, empathy:0, principle:0, confidence:0 };
         for (let i=0; i<questions.length; i++) {
-            const dim = questions[i].dim;
+            const q = questions[i];
             const ans = userAnswers[i];
-            if (ans !== null) scores[dim] += ans;
+            if (ans === null) continue;
+            if (q.dim === 'belief' || q.dim === 'action' || q.dim === 'empathy' || q.dim === 'principle' || q.dim === 'confidence') {
+                scores[q.dim] += ans;
+            }
+            // 权重题不计入基础分
         }
-        // 每个维度4题，满分20，最低4分，直接使用
         return scores;
     }
 
-    // 匹配最相似角色（欧氏距离）
-    function matchCharacter(scores) {
-        let bestKey = null;
-        let minDist = Infinity;
-        for (let key of characterKeys) {
-            const dimsTarget = CHARACTERS[key].dims;
-            let dist = 0;
-            dist += Math.pow(scores.belief - dimsTarget[0], 2);
-            dist += Math.pow(scores.action - dimsTarget[1], 2);
-            dist += Math.pow(scores.empathy - dimsTarget[2], 2);
-            dist += Math.pow(scores.principle - dimsTarget[3], 2);
-            dist += Math.pow(scores.confidence - dimsTarget[4], 2);
-            dist = Math.sqrt(dist);
-            if (dist < minDist) {
-                minDist = dist;
-                bestKey = key;
+    // 根据权重题计算各维度的个性化权重系数 (信念,行动,情感,原则,自信)
+    function computeDimensionWeights() {
+        // 初始权重均为1
+        let weights = { belief:1, action:1, empathy:1, principle:1, confidence:1 };
+        // 处理权重题1 (影响信念和情感)
+        const w1Ans = userAnswers[20]; // 第21题索引20
+        if (w1Ans !== null) {
+            const opt = questions[20].opts.find(o => o.val === w1Ans);
+            if (opt && opt.weightEffect) {
+                if (opt.weightEffect.belief) weights.belief *= opt.weightEffect.belief;
+                if (opt.weightEffect.empathy) weights.empathy *= opt.weightEffect.empathy;
             }
         }
-        return { key: bestKey, distance: minDist };
+        // 处理权重题2 (影响行动和原则)
+        const w2Ans = userAnswers[21]; // 第22题索引21
+        if (w2Ans !== null) {
+            const opt = questions[21].opts.find(o => o.val === w2Ans);
+            if (opt && opt.weightEffect) {
+                if (opt.weightEffect.action) weights.action *= opt.weightEffect.action;
+                if (opt.weightEffect.principle) weights.principle *= opt.weightEffect.principle;
+            }
+        }
+        // 归一化：使得五个权重之和为5
+        let sum = weights.belief + weights.action + weights.empathy + weights.principle + weights.confidence;
+        let factor = 5 / sum;
+        weights.belief *= factor;
+        weights.action *= factor;
+        weights.empathy *= factor;
+        weights.principle *= factor;
+        weights.confidence *= factor;
+        return weights;
+    }
+
+    // 曼哈顿距离 + 个性化权重
+    function weightedManhattanDistance(userScores, charDims, weights) {
+        return Math.abs(userScores.belief - charDims[0]) * weights.belief +
+               Math.abs(userScores.action - charDims[1]) * weights.action +
+               Math.abs(userScores.empathy - charDims[2]) * weights.empathy +
+               Math.abs(userScores.principle - charDims[3]) * weights.principle +
+               Math.abs(userScores.confidence - charDims[4]) * weights.confidence;
+    }
+
+    // 概率抽取 + 返回前三名
+    function getProbabilisticTop3(userScores, weights) {
+        let distances = [];
+        for (let key of characterKeys) {
+            const d = weightedManhattanDistance(userScores, CHARACTERS[key].dims, weights);
+            distances.push({key, dist: d});
+        }
+        distances.sort((a,b) => a.dist - b.dist);
+        const top3 = distances.slice(0,3);
+        // 计算概率：距离越小概率越大，使用倒数
+        let invSum = 0;
+        let invs = top3.map(item => { let inv = 1/(item.dist + 0.1); invSum += inv; return inv; });
+        let probs = invs.map(inv => inv / invSum);
+        // 随机抽取
+        let rand = Math.random();
+        let accum = 0;
+        let selectedIndex = 0;
+        for (let i=0; i<probs.length; i++) {
+            accum += probs[i];
+            if (rand <= accum) { selectedIndex = i; break; }
+        }
+        const mainResult = top3[selectedIndex].key;
+        const alternatives = top3.filter((_,idx) => idx !== selectedIndex).map(item => item.key);
+        return { main: mainResult, alternatives: alternatives, allTop3: top3.map(t => t.key) };
     }
 
     // 雷达图绘制
-    function renderRadarChart(scores) {
-        const canvas = document.getElementById('radarCanvas');
-        if(!canvas) return;
+    function renderRadarChart(canvas, scores) {
+        if (!canvas) return;
         const ctx = canvas.getContext('2d');
         const w = canvas.width = 400;
         const h = canvas.height = 400;
@@ -541,10 +456,11 @@
         const angles = [ -Math.PI/2, -Math.PI/2 + 2*Math.PI/5, -Math.PI/2 + 4*Math.PI/5, -Math.PI/2 + 6*Math.PI/5, -Math.PI/2 + 8*Math.PI/5 ];
         const labels = ["信念(理想)", "行动(主动)", "情感(热忱)", "原则(守序)", "自信(坚定)"];
         ctx.clearRect(0,0,w,h);
+        ctx.fillStyle = "#0a0c15";
+        ctx.fillRect(0,0,w,h);
         ctx.strokeStyle = "#4b5563";
         ctx.fillStyle = "#e2e8f0";
         ctx.font = "12px 'Segoe UI'";
-        // 网格
         for(let level=1; level<=4; level++) {
             ctx.beginPath();
             let r = radius * level / 4;
@@ -558,7 +474,6 @@
             ctx.strokeStyle = "#334155";
             ctx.stroke();
         }
-        // 轴
         for(let i=0;i<5;i++) {
             let x = centerX + radius * Math.cos(angles[i]);
             let y = centerY + radius * Math.sin(angles[i]);
@@ -572,7 +487,6 @@
             ctx.fillStyle = "#facc15";
             ctx.fillText(labels[i], labelX-15, labelY-5);
         }
-        // 数据区域
         let points = [];
         for(let i=0;i<5;i++) {
             let value = Math.min(20, Math.max(0, scores[i])) / 20;
@@ -600,18 +514,18 @@
         }
     }
 
-    // 显示结果页面
     function showResult() {
-        const finalScores = computeScores();
-        const match = matchCharacter(finalScores);
-        const char = CHARACTERS[match.key];
-        const radarData = [finalScores.belief, finalScores.action, finalScores.empathy, finalScores.principle, finalScores.confidence];
-        
+        const baseScores = computeBaseScores();
+        const weights = computeDimensionWeights();
+        const { main, alternatives, allTop3 } = getProbabilisticTop3(baseScores, weights);
+        const char = CHARACTERS[main];
+        const radarData = [baseScores.belief, baseScores.action, baseScores.empathy, baseScores.principle, baseScores.confidence];
         const traitsHtml = char.traits.map(t => `<span class="trait-badge">${t}</span>`).join('');
+        const alternativesHtml = alternatives.length ? `<div class="similar-badges">✨ 你的灵魂中还回响着：${alternatives.map(a => CHARACTERS[a].title).join('、')} ✨</div>` : '';
         const resultHtml = `
             <div style="text-align:center;">
                 <div style="font-size:3rem;">⚜️</div>
-                <h2 class="serif-title gold-text" style="font-size:2rem;">${match.key}</h2>
+                <h2 class="serif-title gold-text" style="font-size:2rem;">${main}</h2>
                 <p style="color:#fbbf24; letter-spacing:2px;">${char.title} · ${char.mbti}</p>
                 <p style="background:rgba(0,0,0,0.4); border-radius:30px; padding:0.3rem 1rem; display:inline-block;">${char.faction}</p>
                 <div style="margin:1rem 0;">${traitsHtml}</div>
@@ -620,17 +534,18 @@
                 <div class="radar-container" id="radarCanvasWrap">
                     <canvas id="radarCanvas" width="400" height="400" style="max-width:100%; height:auto; background:#0a0c15; border-radius:20px;"></canvas>
                 </div>
+                ${alternativesHtml}
                 <p style="font-size:0.75rem; color:#aaa;">※ 维度分数: 信念/行动/情感/原则/自信 (0~20)</p>
             </div>
         `;
         document.getElementById('resultCardContainer').innerHTML = resultHtml;
-        renderRadarChart(radarData);
+        const canvas = document.getElementById('radarCanvas');
+        if (canvas) renderRadarChart(canvas, radarData);
     }
 
-    // 重置测试
     function resetTest() {
         currentIndex = 0;
-        userAnswers = new Array(20).fill(null);
+        userAnswers = new Array(questions.length).fill(null);
         landing.classList.remove('hidden');
         quizView.classList.add('hidden');
         loadingView.classList.add('hidden');
@@ -639,23 +554,20 @@
         nextBtn.innerText = '下一题 →';
     }
 
-    // 开始答题
     function startQuizFlow() {
         landing.classList.add('hidden');
         quizView.classList.remove('hidden');
         currentIndex = 0;
-        userAnswers = new Array(20).fill(null);
+        userAnswers = new Array(questions.length).fill(null);
         renderQuestion();
     }
 
-    // 下一题
     function nextQuestion() {
         if (userAnswers[currentIndex] === null) return;
         if (currentIndex + 1 < questions.length) {
             currentIndex++;
             renderQuestion();
         } else {
-            // 完成测试，跳转加载
             quizView.classList.add('hidden');
             loadingView.classList.remove('hidden');
             setTimeout(() => {
@@ -666,7 +578,6 @@
         }
     }
 
-    // 上一题
     function prevQuestion() {
         if (currentIndex > 0) {
             currentIndex--;
@@ -674,31 +585,48 @@
         }
     }
 
-    // 分享文本
     function shareResult() {
-        const finalScores = computeScores();
-        const match = matchCharacter(finalScores);
-        const char = CHARACTERS[match.key];
-        const shareText = `【铃兰之剑·命运之轮】我的性格结果是：${match.key} · ${char.title} (${char.mbti})\n“${char.quote}”\n快来测测你是哪位英雄？`;
+        const baseScores = computeBaseScores();
+        const weights = computeDimensionWeights();
+        const { main } = getProbabilisticTop3(baseScores, weights);
+        const char = CHARACTERS[main];
+        const shareText = `【铃兰之剑·命运之轮】我的性格结果是：${main} · ${char.title} (${char.mbti})\n“${char.quote}”\n快来测测你是哪位英雄？`;
         if(navigator.clipboard) {
             navigator.clipboard.writeText(shareText).then(()=>alert("结果已复制，快去分享吧！"));
         } else alert(shareText);
     }
 
-    // 保存图片
+    // 克隆截图修复灰色
     async function saveAsImage() {
-        const resultCard = document.getElementById('resultCardContainer');
-        if(!resultCard) return;
+        const originalCard = document.getElementById('resultCardContainer');
+        if (!originalCard) return;
+        const cloneCard = originalCard.cloneNode(true);
+        cloneCard.classList.add('clone-screenshot');
+        cloneCard.style.position = 'fixed';
+        cloneCard.style.top = '-9999px';
+        cloneCard.style.left = '-9999px';
+        cloneCard.style.width = originalCard.offsetWidth + 'px';
+        cloneCard.style.background = '#121623';
+        cloneCard.style.backdropFilter = 'none';
+        document.body.appendChild(cloneCard);
+        const cloneCanvas = cloneCard.querySelector('#radarCanvas');
+        if (cloneCanvas) {
+            const baseScores = computeBaseScores();
+            const radarData = [baseScores.belief, baseScores.action, baseScores.empathy, baseScores.principle, baseScores.confidence];
+            cloneCanvas.width = 400;
+            cloneCanvas.height = 400;
+            renderRadarChart(cloneCanvas, radarData);
+        }
         try {
-            const canvasImg = await html2canvas(resultCard, { scale: 2, backgroundColor: '#0f121f' });
+            const canvas = await html2canvas(cloneCard, { scale: 2.5, backgroundColor: '#121623', logging: false });
             const link = document.createElement('a');
             link.download = 'linglan_result.png';
-            link.href = canvasImg.toDataURL();
+            link.href = canvas.toDataURL();
             link.click();
-        } catch(e) { alert("生成图片失败，可尝试截图"); }
+        } catch(e) { alert("生成图片失败"); }
+        finally { document.body.removeChild(cloneCard); }
     }
 
-    // 事件绑定
     startBtn.addEventListener('click', startQuizFlow);
     retryBtn.addEventListener('click', resetTest);
     nextBtn.addEventListener('click', nextQuestion);
@@ -706,7 +634,6 @@
     shareBtn.addEventListener('click', shareResult);
     saveImgBtn.addEventListener('click', saveAsImage);
 
-    // 粒子背景
     function initParticles() {
         const container = document.getElementById('particlesContainer');
         for(let i=0;i<80;i++) {
