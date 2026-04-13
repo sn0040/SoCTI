@@ -25,7 +25,7 @@ export function initStars() {
     
     function initStarsArray() {
         stars = [];
-        const starCount = Math.floor(width * height / 8000);
+        const starCount = Math.floor(width * height / 4000);
         for (let i = 0; i < starCount; i++) {
             stars.push({
                 x: Math.random() * width,

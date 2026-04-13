@@ -71,3 +71,25 @@ export function getProbabilisticTop3(userScores, weights) {
     const alternatives = top3.filter((_, idx) => idx !== selectedIndex).map(item => item.key);
     return { main: mainResult, alternatives };
 }
+// 根据角色的五维分数，生成22道题的理想选项（0表示A，1表示B，2表示C）
+export function generateIdealOptions(characterDims, questions) {
+    const [belief, action, empathy, principle, confidence] = characterDims;
+    const ideal = [];
+    for (let i = 0; i < questions.length; i++) {
+        const dim = questions[i].dim;
+        let score;
+        switch (dim) {
+            case 'belief': score = belief; break;
+            case 'action': score = action; break;
+            case 'empathy': score = empathy; break;
+            case 'principle': score = principle; break;
+            case 'confidence': score = confidence; break;
+            default: score = 10; // 权重题，默认中间
+        }
+        // 分数映射到选项：≥14 → A(0)，≤6 → C(2)，中间 → B(1)
+        if (score >= 14) ideal.push(0);
+        else if (score <= 6) ideal.push(2);
+        else ideal.push(1);
+    }
+    return ideal;
+}

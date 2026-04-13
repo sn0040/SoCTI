@@ -24,16 +24,20 @@ body {
 
 .particle {
     position: absolute;
-    background: rgba(245, 158, 11, 0.2);
+    background: rgba(245, 158, 11, 0.6);
     border-radius: 50%;
-    animation: floatParticle linear infinite;
+    pointer-events: none;
 }
 
 @keyframes floatParticle {
-    0% { transform: translateY(0) rotate(0deg); opacity: 0; }
-    10% { opacity: 0.6; }
-    90% { opacity: 0.3; }
-    100% { transform: translateY(-200px) rotate(360deg); opacity: 0; }
+    0% {
+        transform: translateY(0) rotate(0deg);
+        opacity: 0.8;
+    }
+    100% {
+        transform: translateY(-200px) rotate(360deg);
+        opacity: 0;
+    }
 }
 
 #app {
