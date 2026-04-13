@@ -84,35 +84,39 @@ function initTarot() {
     isTransitioning = false;
 }
 
-// 连续快速翻转多次（正→背→正→背→正），最后更换图片
+// 连续逆时针旋转多次（每次180度），最后更换图片
 async function quickFlipToNext(newIndex) {
     if (isFlipping || !quizStarted) return;
     isFlipping = true;
 
-    // 临时加快过渡速度（可选，让翻转更快）
-    tarotCard.classList.add('fast-flip');
-
-    const flipCount = 4; // 翻转次数（偶数次后回到正面）
-    for (let i = 0; i < flipCount; i++) {
-        tarotCard.classList.toggle('flipped');
-        await new Promise(resolve => {
-            const onTransitionEnd = () => {
-                tarotCard.removeEventListener('transitionend', onTransitionEnd);
-                resolve();
-            };
-            tarotCard.addEventListener('transitionend', onTransitionEnd);
-        });
-        // 短暂停顿，让每次翻转可见
-        await new Promise(r => setTimeout(r, 30));
+    const inner = tarotCard.querySelector('.tarot-inner');
+    if (!inner) {
+        isFlipping = false;
+        return;
     }
 
-    // 更换图片（此时卡片为正面朝上）
+    // 确保当前角度为0（正面朝上）
+    let currentDeg = 0;
+    // 设置快速过渡
+    inner.style.transition = 'transform 0.15s cubic-bezier(0.23, 1, 0.32, 1)';
+    
+    // 翻转次数（偶数次，最终回到0度）
+    const flipCount = 4; // 4次旋转：每次-180，共-720度，最后重置为0
+    for (let i = 0; i < flipCount; i++) {
+        currentDeg -= 180;
+        inner.style.transform = `rotateY(${currentDeg}deg)`;
+        // 等待动画完成（过渡时长+微小延迟）
+        await new Promise(r => setTimeout(r, 160));
+    }
+    
+    // 动画完成，重置transform为0（无过渡跳跃），并更换图片
+    inner.style.transform = '';
+    inner.style.transition = '';
     setTarotImage(newIndex);
-
-    // 恢复过渡速度
-    tarotCard.classList.remove('fast-flip');
+    
     isFlipping = false;
 }
+
 
 // ---------- 测试核心逻辑 ----------
 function renderQuestion() {
