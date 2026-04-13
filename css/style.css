@@ -441,3 +441,8 @@ button:disabled {
     0% { transform: rotateY(0deg); }
     100% { transform: rotateY(720deg); }
 }
+
+/* 隐藏塔罗牌 */
+.tarot-wrapper.hidden {
+    display: none;
+}

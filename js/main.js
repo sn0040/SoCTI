@@ -65,6 +65,8 @@ function initTarot() {
 
 function startQuizAfterFlip() {
     if (quizStarted) return;
+    // 确保塔罗牌显示
+    if (tarotWrapper) tarotWrapper.classList.remove('hidden');
     quizStarted = true;
     landing.classList.add('hidden');
     quizView.classList.remove('hidden');
@@ -109,6 +111,12 @@ function showLoading() {
 }
 
 function showResult() {
+    // 隐藏塔罗牌并移除 top 类，避免占位
+    if (tarotWrapper) {
+        tarotWrapper.classList.add('hidden');
+        tarotWrapper.classList.remove('top');
+    }
+    
     const baseScores = computeBaseScores(userAnswers, QUESTIONS);
     const weights = computeDimensionWeights(userAnswers, QUESTIONS);
     const { main, alternatives } = getProbabilisticTop3(baseScores, weights);
@@ -168,6 +176,13 @@ function prevQuestion() {
 function resetTest() {
     if (isTransitioning) return;
     isTransitioning = true;
+    
+    // 重置塔罗牌：显示、居中、移除固定定位
+    if (tarotWrapper) {
+        tarotWrapper.classList.remove('hidden', 'top');
+        tarotWrapper.classList.add('center');
+    }
+    
     quizStarted = false;
     currentIndex = 0;
     userAnswers = new Array(QUESTIONS.length).fill(null);
