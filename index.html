@@ -10,7 +10,6 @@
 <body>
 <div id="particles-container"></div>
 
-<!-- 塔罗牌容器（初始居中，点击后移到顶部） -->
 <div id="tarotWrapper" class="tarot-wrapper center">
     <div class="tarot-card" id="tarotCard">
         <div class="tarot-inner">
@@ -26,7 +25,6 @@
 </div>
 
 <div id="app">
-    <!-- 首页 -->
     <div id="landing" class="view active">
         <div class="card">
             <div class="icon">🔮</div>
@@ -39,7 +37,6 @@
         </div>
     </div>
 
-    <!-- 测试视图 -->
     <div id="quiz" class="view hidden">
         <div class="card">
             <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
@@ -56,7 +53,6 @@
         </div>
     </div>
 
-    <!-- 加载视图 -->
     <div id="loading" class="view hidden">
         <div class="card">
             <div class="icon">⚙️</div>
@@ -65,7 +61,6 @@
         </div>
     </div>
 
-    <!-- 结果视图 -->
     <div id="result" class="view hidden">
         <div class="card result-card" id="resultCard"></div>
         <div class="result-actions">
@@ -77,6 +72,262 @@
     </div>
 </div>
 
-<script type="module" src="js/main.js"></script>
+<script>
+    // ---------- 塔罗牌图片映射（与题目顺序对应）----------
+    const tarotImages = [
+        "major_arcana_00.png", "major_arcana_01.png", "major_arcana_02.png", "major_arcana_03.png",
+        "major_arcana_04.png", "major_arcana_05.png", "major_arcana_06.png", "major_arcana_07.png",
+        "major_arcana_08.png", "major_arcana_09.png", "major_arcana_10.png", "major_arcana_11.png",
+        "major_arcana_12.png", "major_arcana_13.png", "major_arcana_14.png", "major_arcana_15.png",
+        "major_arcana_16.png", "major_arcana_17.png", "major_arcana_18.png", "major_arcana_19.png",
+        "major_arcana_20.png", "major_arcana_21.png"
+    ];
+
+    // ---------- 题目数据（简化版，实际可替换为完整数据）----------
+    const QUESTIONS = [];
+    for (let i = 0; i < 22; i++) {
+        QUESTIONS.push({
+            name: ["愚者的天真","魔术师的梦想","女祭司的仁慈","女皇的优雅","皇帝的威严","法皇的法则","恋人的亲密","战车的行进","力量的源泉","隐者的寂静","命运的抉择","正义的裁决","倒吊人的奉献","死神的呢喃","节制的欲望","恶魔的诱惑","高塔的毁灭","星星的指引","月亮的盈亏","太阳的光芒","审判者的救赎","世界的指向"][i],
+            text: `【${["愚者的天真","魔术师的梦想","女祭司的仁慈","女皇的优雅","皇帝的威严","法皇的法则","恋人的亲密","战车的行进","力量的源泉","隐者的寂静","命运的抉择","正义的裁决","倒吊人的奉献","死神的呢喃","节制的欲望","恶魔的诱惑","高塔的毁灭","星星的指引","月亮的盈亏","太阳的光芒","审判者的救赎","世界的指向"][i]}】这是第${i+1}道问题的描述，请根据你的直觉选择。`,
+            dim: "belief",
+            opts: [
+                {val:5, text:"选项A：积极正面"},
+                {val:3, text:"选项B：中立平衡"},
+                {val:1, text:"选项C：谨慎保守"}
+            ]
+        });
+    }
+
+    // ---------- DOM 元素 ----------
+    const landing = document.getElementById('landing');
+    const quizView = document.getElementById('quiz');
+    const loadingView = document.getElementById('loading');
+    const resultView = document.getElementById('result');
+    const retryBtn = document.getElementById('retryBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    const prevBtn = document.getElementById('prevBtn');
+    const shareBtn = document.getElementById('shareBtn');
+    const saveImgBtn = document.getElementById('saveImgBtn');
+    const questionText = document.getElementById('questionText');
+    const optionsContainer = document.getElementById('optionsContainer');
+    const tarotNameSpan = document.getElementById('tarotName');
+    const tarotProgressSpan = document.getElementById('tarotProgress');
+    const progressFill = document.getElementById('progressFill');
+    const tarotWrapper = document.getElementById('tarotWrapper');
+    const tarotCard = document.getElementById('tarotCard');
+    const majorArcanaImg = document.getElementById('majorArcanaImg');
+
+    // ---------- 状态 ----------
+    let currentIndex = 0;
+    let userAnswers = new Array(QUESTIONS.length).fill(null);
+    let quizStarted = false;
+    let isFlipping = false;
+    let isTransitioning = false;
+
+    // ---------- 辅助函数 ----------
+    function setTarotImage(index) {
+        if (majorArcanaImg) {
+            majorArcanaImg.src = `assets/images/${tarotImages[index]}`;
+        }
+    }
+
+    // 重置塔罗牌到初始状态（背面朝上，居中）
+    function initTarot() {
+        if (tarotWrapper) {
+            tarotWrapper.classList.remove('top');
+            tarotWrapper.classList.add('center');
+        }
+        const inner = tarotCard.querySelector('.tarot-inner');
+        if (inner) {
+            inner.style.transition = '';
+            inner.style.transform = 'rotateY(0deg)'; // 背面朝上
+        }
+        quizStarted = false;
+        isFlipping = false;
+        isTransitioning = false;
+    }
+
+    // 开始测试（翻转完成后调用）
+    function startQuizAfterFlip() {
+        if (quizStarted) return;
+        quizStarted = true;
+        landing.classList.add('hidden');
+        quizView.classList.remove('hidden');
+        currentIndex = 0;
+        userAnswers = new Array(QUESTIONS.length).fill(null);
+        renderQuestion();
+        setTarotImage(0);
+    }
+
+    // 渲染当前题目
+    function renderQuestion() {
+        const q = QUESTIONS[currentIndex];
+        tarotNameSpan.innerText = `第${currentIndex+1}张牌【${q.name}】`;
+        tarotProgressSpan.innerText = `${currentIndex+1} / ${QUESTIONS.length}`;
+        questionText.innerText = q.text;
+        optionsContainer.innerHTML = '';
+        const selectedVal = userAnswers[currentIndex];
+        q.opts.forEach((opt, idx) => {
+            const optDiv = document.createElement('div');
+            optDiv.className = 'quiz-option';
+            if (selectedVal !== null && selectedVal === opt.val) optDiv.classList.add('selected');
+            const prefix = String.fromCharCode(65+idx);
+            optDiv.innerHTML = `<span style="font-weight:500;">${prefix}.</span> ${opt.text}`;
+            optDiv.addEventListener('click', () => {
+                userAnswers[currentIndex] = opt.val;
+                renderQuestion();
+                nextBtn.disabled = false;
+                if (currentIndex === QUESTIONS.length-1) nextBtn.innerText = '完成 ✓';
+                else nextBtn.innerText = '下一张牌 →';
+            });
+            optionsContainer.appendChild(optDiv);
+        });
+        nextBtn.disabled = (userAnswers[currentIndex] === null);
+        progressFill.style.width = `${((currentIndex+1)/QUESTIONS.length)*100}%`;
+        prevBtn.disabled = (currentIndex === 0);
+    }
+
+    function showLoading() {
+        landing.classList.add('hidden');
+        quizView.classList.add('hidden');
+        resultView.classList.add('hidden');
+        loadingView.classList.remove('hidden');
+    }
+
+    function showResult() {
+        loadingView.classList.add('hidden');
+        resultView.classList.remove('hidden');
+        document.getElementById('resultCard').innerHTML = '<div style="text-align:center;">测试结果占位（实际可对接完整结果页）</div>';
+    }
+
+    // 核心：快速翻转下一张（单向旋转两圈，最后强制正面）
+    function quickFlipToNext(newIndex) {
+        if (isFlipping || !quizStarted) return;
+        isFlipping = true;
+        const inner = tarotCard.querySelector('.tarot-inner');
+        if (!inner) {
+            isFlipping = false;
+            return;
+        }
+        // 确保当前是正面（已经是正面，因为之前翻转后保持正面）
+        // 添加旋转动画
+        inner.classList.add('spin');
+        // 动画一半时换图
+        setTimeout(() => {
+            setTarotImage(newIndex);
+        }, 250);
+        // 动画结束后，清除动画类，并强制设置回正面（rotateY(180deg)）
+        const onAnimationEnd = () => {
+            inner.classList.remove('spin');
+            // 强制设置正面状态（无过渡，避免闪动）
+            inner.style.transition = 'none';
+            inner.style.transform = 'rotateY(180deg)';
+            // 强制重绘
+            inner.offsetHeight;
+            // 恢复过渡（但保留 transform 为 180deg）
+            inner.style.transition = '';
+            isFlipping = false;
+        };
+        inner.addEventListener('animationend', onAnimationEnd);
+    }
+
+    function nextQuestion() {
+        if (!quizStarted) return;
+        if (userAnswers[currentIndex] === null) return;
+        if (currentIndex + 1 < QUESTIONS.length) {
+            quickFlipToNext(currentIndex + 1);
+            currentIndex++;
+            renderQuestion();
+        } else {
+            showLoading();
+            setTimeout(() => {
+                showResult();
+            }, 1200);
+        }
+    }
+
+    function prevQuestion() {
+        if (!quizStarted) return;
+        if (currentIndex > 0) {
+            // 上一题简单处理，不带动画，直接换图（可根据需要添加动画）
+            currentIndex--;
+            renderQuestion();
+            setTarotImage(currentIndex);
+        }
+    }
+
+    function resetTest() {
+        if (isTransitioning) return;
+        isTransitioning = true;
+        quizStarted = false;
+        currentIndex = 0;
+        userAnswers = new Array(QUESTIONS.length).fill(null);
+        landing.classList.remove('hidden');
+        quizView.classList.add('hidden');
+        loadingView.classList.add('hidden');
+        resultView.classList.add('hidden');
+        nextBtn.disabled = true;
+        nextBtn.innerText = '下一张牌 →';
+        initTarot();
+        setTimeout(() => {
+            isTransitioning = false;
+        }, 500);
+    }
+
+    function shareResult() {
+        alert("分享功能占位，可接入实际逻辑");
+    }
+
+    async function saveAsImage() {
+        alert("截图功能占位，可接入 html2canvas");
+    }
+
+    // 首页点击塔罗牌：背面->正面，移动到顶部，开始测试
+    function onTarotClick() {
+        if (quizStarted || isTransitioning) return;
+        isTransitioning = true;
+        const inner = tarotCard.querySelector('.tarot-inner');
+        if (!inner) return;
+        inner.style.transition = 'transform 0.6s cubic-bezier(0.23, 1, 0.32, 1)';
+        inner.style.transform = 'rotateY(180deg)';
+        const onTransitionEnd = () => {
+            inner.removeEventListener('transitionend', onTransitionEnd);
+            if (tarotWrapper) {
+                tarotWrapper.classList.remove('center');
+                tarotWrapper.classList.add('top');
+            }
+            startQuizAfterFlip();
+            isTransitioning = false;
+        };
+        inner.addEventListener('transitionend', onTransitionEnd);
+    }
+
+    // 粒子效果
+    function initParticles() {
+        const container = document.getElementById('particles-container');
+        for (let i = 0; i < 60; i++) {
+            const p = document.createElement('div');
+            p.classList.add('particle');
+            p.style.width = Math.random() * 4 + 1 + 'px';
+            p.style.height = p.style.width;
+            p.style.left = Math.random() * 100 + '%';
+            p.style.top = Math.random() * 100 + '%';
+            p.style.animationDuration = Math.random() * 8 + 4 + 's';
+            p.style.animationDelay = Math.random() * 5 + 's';
+            container.appendChild(p);
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        initTarot();
+        tarotCard.addEventListener('click', onTarotClick);
+        retryBtn.addEventListener('click', resetTest);
+        nextBtn.addEventListener('click', nextQuestion);
+        prevBtn.addEventListener('click', prevQuestion);
+        shareBtn.addEventListener('click', shareResult);
+        saveImgBtn.addEventListener('click', saveAsImage);
+        initParticles();
+    });
+</script>
 </body>
 </html>
