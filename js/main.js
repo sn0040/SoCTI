@@ -3,6 +3,7 @@ import { CHARACTERS } from './data/characters.js';
 import { computeBaseScores, computeDimensionWeights, getProbabilisticTop3 } from './utils/score.js';
 import { renderResult } from './utils/render.js';
 import { initParticles } from './particles.js';
+import { initStars } from './stars.js';
 
 // ---------- 塔罗牌图片映射（与 QUESTIONS 顺序一一对应）----------
 const tarotImages = [
@@ -243,6 +244,7 @@ function onTarotClick() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+    initStars(); 
     initTarot();
     tarotCard.addEventListener('click', onTarotClick);
     retryBtn.addEventListener('click', resetTest);
