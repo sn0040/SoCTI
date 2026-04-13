@@ -1,0 +1,480 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background: linear-gradient(145deg, #0b0e1a 0%, #0f121f 100%);
+    font-family: 'Segoe UI', 'PingFang SC', Roboto, 'Helvetica Neue', sans-serif;
+    color: #e2e8f0;
+    min-height: 100vh;
+    overflow-x: hidden;
+}
+
+#particles-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 0;
+}
+
+.particle {
+    position: absolute;
+    background: rgba(245, 158, 11, 0.2);
+    border-radius: 50%;
+    animation: floatParticle linear infinite;
+}
+
+@keyframes floatParticle {
+    0% { transform: translateY(0) rotate(0deg); opacity: 0; }
+    10% { opacity: 0.6; }
+    90% { opacity: 0.3; }
+    100% { transform: translateY(-200px) rotate(360deg); opacity: 0; }
+}
+
+#app {
+    position: relative;
+    z-index: 2;
+    max-width: 780px;
+    margin: 0 auto;
+    padding: 1.5rem 1rem 3rem;
+}
+
+.view {
+    transition: opacity 0.3s ease;
+}
+
+.view.hidden {
+    display: none;
+}
+
+.card {
+    background: rgba(18, 22, 35, 0.85);
+    backdrop-filter: blur(12px);
+    border-radius: 2rem;
+    border: 1px solid rgba(245, 158, 11, 0.25);
+    box-shadow: 0 20px 35px -12px rgba(0, 0, 0, 0.5);
+    padding: 1.8rem;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 25px 40px -12px rgba(0, 0, 0, 0.6);
+}
+
+.icon {
+    font-size: 4rem;
+    text-align: center;
+    margin-bottom: 1rem;
+}
+
+.serif-title {
+    font-family: 'Times New Roman', '宋体', serif;
+    font-weight: bold;
+    letter-spacing: 2px;
+    font-size: 2.5rem;
+    text-align: center;
+    color: #fbbf24;
+}
+
+.subtitle {
+    font-size: 1.3rem;
+    color: #fbbf24;
+    text-align: center;
+    margin-top: 0.5rem;
+}
+
+.divider {
+    height: 2px;
+    width: 80px;
+    background: #f59e0b;
+    margin: 1rem auto;
+}
+
+.btn-gold {
+    background: linear-gradient(95deg, #f59e0b, #d97706);
+    border: none;
+    color: #0b0e1a;
+    font-weight: bold;
+    padding: 12px 28px;
+    border-radius: 40px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+}
+
+.btn-gold:hover {
+    transform: scale(1.02);
+    background: linear-gradient(95deg, #fbbf24, #f59e0b);
+    box-shadow: 0 8px 20px rgba(245, 158, 11, 0.5);
+}
+
+.btn-outline {
+    background: transparent;
+    border: 1px solid #f59e0b;
+    color: #fcd34d;
+    border-radius: 40px;
+    padding: 8px 20px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.btn-outline:hover {
+    background: rgba(245, 158, 11, 0.2);
+}
+
+.progress-bar {
+    background: #2d3348;
+    border-radius: 30px;
+    height: 8px;
+    overflow: hidden;
+    margin-bottom: 1rem;
+}
+
+.progress-fill {
+    background: linear-gradient(90deg, #f59e0b, #fbbf24);
+    width: 0%;
+    height: 100%;
+    transition: width 0.3s ease;
+}
+
+@keyframes pulse {
+    0% { opacity: 0.6; width: 30%; }
+    50% { opacity: 1; width: 70%; }
+    100% { opacity: 0.6; width: 30%; }
+}
+
+.tarot-header {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #fbbf24;
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    flex-wrap: wrap;
+    margin-bottom: 0.5rem;
+}
+
+.tarot-name {
+    font-size: 1.5rem;
+    letter-spacing: 2px;
+}
+
+.tarot-progress {
+    font-size: 1rem;
+    color: #9ca3af;
+}
+
+.question-text {
+    font-size: 1.25rem;
+    line-height: 1.5;
+    margin: 1rem 0 1.5rem;
+    color: #f3f4f6;
+}
+
+.options-container {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.quiz-option {
+    background: rgba(30, 35, 55, 0.6);
+    border-radius: 1.2rem;
+    padding: 1rem 1.2rem;
+    border: 1px solid #2d3348;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.quiz-option:hover {
+    background: rgba(50, 55, 80, 0.8);
+    border-color: #f59e0b;
+    transform: translateX(5px);
+}
+
+.quiz-option.selected {
+    background: rgba(245, 158, 11, 0.15);
+    border-color: #f59e0b;
+    box-shadow: 0 0 8px rgba(245, 158, 11, 0.3);
+}
+
+.quiz-option::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(245,158,11,0.2), transparent);
+    transition: left 0.5s;
+}
+
+.quiz-option:hover::after {
+    left: 100%;
+}
+
+.nav-buttons {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 1.5rem;
+    gap: 1rem;
+}
+
+.trait-badge {
+    display: inline-block;
+    background: rgba(245, 158, 11, 0.2);
+    border-radius: 40px;
+    padding: 0.2rem 1rem;
+    font-size: 0.8rem;
+    margin: 0.2rem;
+    border-left: 2px solid #f59e0b;
+}
+
+.quote {
+    font-style: italic;
+    border-left: 3px solid #f59e0b;
+    padding-left: 1rem;
+    background: rgba(0,0,0,0.3);
+    border-radius: 0 12px 12px 0;
+}
+
+.radar-container {
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 1rem;
+    padding: 1rem;
+    margin: 1rem 0;
+}
+
+canvas {
+    display: block;
+    margin: 0 auto;
+    background: #0a0c15;
+    border-radius: 20px;
+    width: 100%;
+    height: auto;
+}
+
+.similar-badges {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.5rem;
+    margin: 1rem 0;
+}
+
+footer {
+    text-align: center;
+    font-size: 0.7rem;
+    color: #5a627a;
+    margin-top: 2rem;
+}
+
+.result-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    margin-top: 1.5rem;
+}
+
+button:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.clone-screenshot {
+    position: fixed;
+    top: -9999px;
+    left: -9999px;
+    background: #121623 !important;
+    backdrop-filter: none !important;
+    border: 1px solid rgba(245, 158, 11, 0.5) !important;
+    box-shadow: none !important;
+}
+
+.clone-screenshot .radar-container {
+    background: #0a0c15 !important;
+}
+
+.clone-screenshot .quote {
+    background: #0a0c15 !important;
+}
+
+.clone-screenshot .trait-badge {
+    background: rgba(245, 158, 11, 0.25) !important;
+}
+
+@media (max-width: 640px) {
+    .card { padding: 1.2rem; }
+    .tarot-name { font-size: 1.2rem; }
+    .question-text { font-size: 1rem; }
+}
+
+/* ========= 塔罗牌样式（统一修正版） ========= */
+.tarot-wrapper {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: all 0.8s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+    z-index: 100;
+}
+.tarot-wrapper.center {
+    margin: 2rem auto 0;
+}
+.tarot-wrapper.top {
+    position: fixed;
+    top: 20px;
+    left: 0;
+    right: 0;
+    margin: 0 auto;
+    z-index: 200;
+}
+
+/* 塔罗牌卡片容器 - 按 420:800 比例缩放 */
+.tarot-card {
+    width: 126px;
+    height: 240px;
+    cursor: pointer;
+    perspective: 1000px;
+    transition: transform 0.3s ease;
+    /* 始终有发光效果（正反面都有） */
+    animation: cardGlow 1.2s ease-in-out infinite alternate;
+}
+@media (min-width: 640px) {
+    .tarot-card {
+        width: 168px;
+        height: 320px;
+    }
+}
+@media (min-width: 1024px) {
+    .tarot-card {
+        width: 210px;
+        height: 400px;
+    }
+}
+
+.tarot-inner {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    text-align: center;
+    transition: transform 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+    transform-style: preserve-3d;
+    border-radius: 12px;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+}
+
+.tarot-card.flipped .tarot-inner {
+    transform: rotateY(180deg);
+}
+
+.tarot-front,
+.tarot-back {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    backface-visibility: hidden;
+    border-radius: 12px;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.tarot-front {
+    background: #2a2a2a;
+    transform: rotateY(180deg);
+    flex-direction: column;
+}
+.tarot-back {
+    background: #1a1a2e;
+    transform: rotateY(0deg);
+}
+
+.tarot-front img,
+.tarot-back img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+.major-frame {
+    pointer-events: none;
+    z-index: 2;
+    mix-blend-mode: screen;
+}
+
+/* 发光动画 */
+@keyframes cardGlow {
+    0% {
+        filter: drop-shadow(0 0 3px rgba(245, 158, 11, 0.4));
+        box-shadow: 0 0 8px rgba(245, 158, 11, 0.2);
+    }
+    100% {
+        filter: drop-shadow(0 0 15px rgba(245, 158, 11, 0.9));
+        box-shadow: 0 0 25px rgba(245, 158, 11, 0.6);
+    }
+}
+
+/* 当塔罗牌固定在顶部时，增加漂浮动画 */
+.tarot-wrapper.top .tarot-card {
+    animation: cardGlow 1.2s ease-in-out infinite alternate,
+               float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+    0% { transform: translateY(0px); }
+    50% { transform: translateY(-8px); }
+    100% { transform: translateY(0px); }
+}
+
+/* 快速翻转动画（用于切换题目） */
+.tarot-card.quick-flip {
+    animation: quickFlip 0.3s ease-in-out;
+}
+@keyframes quickFlip {
+    0% { transform: scale(1); }
+    50% { transform: scale(0.95) rotateY(90deg); }
+    100% { transform: scale(1); }
+}
+
+/* 提示文字 */
+.tap-hint {
+    text-align: center;
+    margin-top: 1rem;
+    font-size: 0.9rem;
+    color: #fcd34d;
+    opacity: 0.8;
+    letter-spacing: 2px;
+}
+
+/* ========= 塔罗牌移入顶部后，下方内容留出空间 ========= */
+.tarot-wrapper.top + #app .view .card,
+.tarot-wrapper.top ~ #app .view .card {
+    margin-top: 450px !important;
+}
+
+@media (max-width: 640px) {
+    .tarot-wrapper.top + #app .view .card,
+    .tarot-wrapper.top ~ #app .view .card {
+        margin-top: 380px !important;
+    }
+}
+
+
+/* 快速翻转过渡 */
+.tarot-card.fast-flip .tarot-inner {
+    transition: transform 0.25s cubic-bezier(0.23, 1, 0.32, 1);
+}
