@@ -1,8 +1,18 @@
+
 import { QUESTIONS } from './data/questions.js';
 import { CHARACTERS } from './data/characters.js';
 import { computeBaseScores, computeDimensionWeights, generateIdealOptions } from './utils/score.js';
 import { renderResult } from './utils/render.js';
 import { initParticles } from './particles.js';
+
+// 预加载所有塔罗牌图片
+function preloadTarotImages() {
+    for (let i = 0; i < tarotImages.length; i++) {
+        const img = new Image();
+        img.src = `assets/images/${tarotImages[i]}`;
+    }
+    console.log('所有塔罗牌图片预加载完成');
+}
 
 // ---------- 塔罗牌图片映射（与 QUESTIONS 顺序一一对应）----------
 const tarotImages = [
@@ -314,6 +324,7 @@ function onTarotClick() {
 
 // ---------- 事件绑定 ----------
 document.addEventListener('DOMContentLoaded', () => {
+    preloadTarotImages();  // 预加载所有塔罗牌图片
     initTarot();
     tarotCard.addEventListener('click', onTarotClick);
     retryBtn.addEventListener('click', resetTest);
